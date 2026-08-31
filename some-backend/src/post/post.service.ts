@@ -31,7 +31,7 @@ export class PostService {
 
     createPost (dto: CreatePostDto) {
         // id and created_at are filled in by the database, not by us
-        return this.posts.save(this.posts.create(dto));
+        return this.posts.save(dto);
     }
 
     async updatePost (id: number, dto: UpdatePostDto) {

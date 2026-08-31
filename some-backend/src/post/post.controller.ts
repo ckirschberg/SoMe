@@ -3,11 +3,14 @@ import { PostService } from './post.service';
 import { CreatePostDto } from './dtos/create-post.dto';
 import { UpdatePostDto } from './dtos/update-post.dto';
 
+// posts => endpoint name
 @Controller('posts')
 export class PostController {
     // DI - Dependency Injection
+    // Frameworket stiller objekter til rådighed hvis I beder om det.
     constructor(private readonly postService: PostService) {}
 
+    // Methods
     @Get() 
     getPosts() {
         return this.postService.getPosts();

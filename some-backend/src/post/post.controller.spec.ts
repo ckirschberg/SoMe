@@ -1,15 +1,25 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotFoundException } from '@nestjs/common';
 import { PostController } from './post.controller';
 import { PostService } from './post.service';
 
 describe('PostController', () => {
   let controller: PostController;
+  let service: Record<string, jest.Mock>;
 
   beforeEach(async () => {
+    // The service is mocked here: the controller's only job is to take the
+    // request apart and delegate, so that is all these tests check.
+    service = {
+      getPosts: jest.fn(),
+      getPost: jest.fn(),
+      createPost: jest.fn(),
+      updatePost: jest.fn(),
+      deletePost: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [PostController],
-      providers: [PostService],
+      providers: [{ provide: PostService, useValue: service }],
     }).compile();
 
     controller = module.get<PostController>(PostController);
@@ -19,21 +29,21 @@ describe('PostController', () => {
     expect(controller).toBeDefined();
   });
 
-  it('updates an existing post', () => {
-    const updated = controller.updatePost('1', {
-      title: 'new title',
-      body: 'new body',
-      author: 'new author',
-    });
+  it('converts the string route param to a number before delegating', () => {
+    controller.getPost('1');
+    controller.deletePost('2');
 
-    expect(updated).toMatchObject({ id: 1, title: 'new title', author: 'new author' });
-    expect(controller.getPost('1')).toMatchObject({ title: 'new title' });
+    expect(service.getPost).toHaveBeenCalledWith(1);
+    expect(service.deletePost).toHaveBeenCalledWith(2);
   });
 
-  it('deletes an existing post', () => {
-    controller.deletePost('1');
+  it('passes the body straight through to the service', () => {
+    const dto = { title: 'new title', body: 'new body', author: 'new author' };
 
-    expect(controller.getPosts()).toHaveLength(1);
-    expect(() => controller.getPost('1')).toThrow(NotFoundException);
+    controller.createPost(dto);
+    controller.updatePost('1', dto);
+
+    expect(service.createPost).toHaveBeenCalledWith(dto);
+    expect(service.updatePost).toHaveBeenCalledWith(1, dto);
   });
 });

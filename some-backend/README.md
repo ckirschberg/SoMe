@@ -26,6 +26,46 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+## Database setup
+
+The posts API is backed by PostgreSQL through TypeORM. Before the app will boot:
+
+```bash
+# 1. create the database
+createdb some
+
+# 2. copy the example env file and fill in your credentials
+cp .env.example .env
+```
+
+`.env` is gitignored; `.env.example` lists the names every developer must set:
+
+| Variable | Meaning |
+| --- | --- |
+| `DB_HOST` | database host, e.g. `localhost` |
+| `DB_PORT` | database port, e.g. `5432` |
+| `DB_USER` | postgres user |
+| `DB_PASS` | that user's password (may be empty for a local trust setup) |
+| `DB_NAME` | database name, e.g. `some` |
+
+The `posts` table is created automatically from `src/post/entities/post.entity.ts`,
+because `synchronize: true` is set in `AppModule`. That is convenient while
+learning and **must not be used in production** - it will alter and drop columns
+to match the entity.
+
+## The posts API
+
+| Method | Route | Does |
+| --- | --- | --- |
+| `GET` | `/posts` | every post |
+| `GET` | `/posts/:id` | one post, 404 if the id is unknown |
+| `POST` | `/posts` | create; the database assigns `id` and `created_at` |
+| `PUT` | `/posts/:id` | replace `title`, `body` and `author`, 404 if unknown |
+| `DELETE` | `/posts/:id` | delete, returning the removed post, 404 if unknown |
+
+Bodies are validated by `class-validator`, so a missing or empty `title`, `body`
+or `author` is rejected with a 400 before the controller runs.
+
 ## Installation
 
 ```bash

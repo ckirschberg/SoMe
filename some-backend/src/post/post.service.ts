@@ -44,12 +44,4 @@ export class PostService {
         return this.posts.save(post);
     }
 
-    async deletePost (id: number) {
-        // read it before deleting so we can still return what was removed
-        const post = await this.getPost(id);
-
-        await this.posts.delete(id);
-
-        return post;
-    }
 }

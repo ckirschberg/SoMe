@@ -1,3 +1,3 @@
-export class NewPostDto {
-    constructor(public title: string, public body: string, public author: string) {}
-}
+import { PostDto } from "./postDto"
+
+export type NewPostDto = Omit<PostDto, "id">

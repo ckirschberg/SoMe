@@ -2,7 +2,10 @@ import { Platform } from "react-native"
 import { NewPostDto } from "../types/newPostDto";
 import { PostDto } from "../types/postDto";
 
-const baseUrl = Platform.OS === 'ios' ? 'localhost:3006' : '10.0.2.2:3006';
+// the scheme is not optional: fetch hands the string to the platform's URL
+// parser, and 'localhost:3006' reads as scheme 'localhost' - hence iOS's
+// "unsupported URL". The Android emulator reaches the host at 10.0.2.2.
+const baseUrl = Platform.OS === 'ios' ? 'http://localhost:3006' : 'http://10.0.2.2:3006';
 
 export async function fetchPosts(): Promise<PostDto[]> {
     var result = await fetch(baseUrl + '/posts');

@@ -1,5 +1,6 @@
 import { Text, Button, TextInput, View, StyleSheet, Alert } from "react-native";
 import { useState, useEffect } from 'react';
+import Posts from "./posts";
 
 export default function Index() {
     const [text, onChangeText] = useState('');
@@ -16,6 +17,8 @@ export default function Index() {
 
   return (
     <View style={styles.container}>
+      <Posts />
+      
       <Text>Hello World - Hej allesammen</Text>
 
       {/* Use flat list to display todo items */}

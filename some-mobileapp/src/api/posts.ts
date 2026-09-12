@@ -16,6 +16,9 @@ export async function fetchPosts() {
 export async function addPost(dto: NewPostDto) {
     var result = await fetch(baseUrl + "/posts", {
         method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
         body: JSON.stringify(dto)
     });
 

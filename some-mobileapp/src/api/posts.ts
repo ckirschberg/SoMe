@@ -9,3 +9,4 @@ export default async function fetchPosts() {
 
     return result.json();
 }
+

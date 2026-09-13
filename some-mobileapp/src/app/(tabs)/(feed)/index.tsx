@@ -1,14 +1,15 @@
-import { useEffect, useState } from "react";
-import { Text, FlatList, StyleSheet } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { fetchPosts } from "../api/posts";
-import { PostDto } from "../types/postDto";
-import { Post } from "../components/post";
+import { useCallback, useState } from "react";
+import { Text, FlatList, StyleSheet, Button, View } from "react-native";
+import { useFocusEffect, useRouter } from "expo-router";
+import { fetchPosts } from "../../../api/posts";
+import { PostDto } from "../../../types/postDto";
+import { Post } from "../../../components/post";
 
 
-export default function Posts() {
+export default function Feed() {
     const [posts, setPosts] = useState<PostDto[]>([])
     const [error, setError] = useState<string>("")
+    const router = useRouter();
 
     const loadPosts = async () => {
         try {
@@ -22,17 +23,27 @@ export default function Posts() {
         }
 
     }
-    
-    useEffect(() => {
-        loadPosts();
-    }, [])
+
+    // the original mount-only load, kept for reference:
+    // useEffect(() => {
+    //     loadPosts();
+    // }, [])
+
+    // useFocusEffect, not useEffect: this screen stays mounted while newPost is
+    // pushed on top of it, so a mount-only effect would never run again and a
+    // post you just saved would be missing from the list
+    useFocusEffect(
+        useCallback(() => {
+            loadPosts();
+        }, [])
+    );
 
     return (
-        // SafeAreaView must come from react-native-safe-area-context - the one in
-        // react-native is a different component that ignores SafeAreaProvider.
-        // edges skips the top: the Stack header already sits under the status bar,
-        // so insetting the top again would push the list down twice.
-        <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
+        // no SafeAreaView needed any more: the feed stack's header covers the top
+        // inset and the tab bar covers the bottom one
+        <View style={styles.container}>
+            <Button title="New post" onPress={() => router.push("/newPost")} />
+
             {error ? <Text>{error}</Text> : null}
 
             <FlatList
@@ -40,18 +51,13 @@ export default function Posts() {
                 renderItem={({item}) => <Post title={item.title} body={item.body} author={item.author} />}
                 keyExtractor={item => item.id.toString()}
             />
-        </SafeAreaView>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
   container: {
-    // deliberately NOT flex: 1 - that would claim all the leftover height and
-    // leave a gap under a short list. flexShrink lets the list size to its
-    // content, then give way (and scroll internally) once it outgrows the screen
-    flexShrink: 1,
-    // the parent in index.tsx centres its children, which would shrink this to
-    // the width of its content - stretch keeps the list full-width regardless
-    alignSelf: 'stretch',
+    // the feed owns the whole screen now, so it can claim the leftover height
+    flex: 1,
   }
 });

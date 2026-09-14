@@ -43,5 +43,9 @@ export class PostService {
 
         return this.posts.save(post);
     }
+    async deletePost(id: number) {
+        const post = await this.getPost(id);
+        this.posts.delete(post);
+    }
 
 }

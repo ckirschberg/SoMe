@@ -1,5 +1,5 @@
 import { Platform } from "react-native";
-import { CreatePostDto } from "../types/createPostDto";
+import { NewPostDto } from "../types/newPostDto";
 import { PostDto } from "../types/postDto";
 
 // code by platform - 
@@ -18,7 +18,7 @@ export async function fetchPosts(): Promise<PostDto[]> {
     return result.json()
 }
 
-export async function addPost(post: CreatePostDto): Promise<PostDto> {
+export async function addPost(post: NewPostDto): Promise<PostDto> {
     const result = await fetch(baseUrl+ "/posts", {
         method: "POST",
         body: JSON.stringify(post),

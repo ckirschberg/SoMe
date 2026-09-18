@@ -47,15 +47,4 @@ export class PostService {
         const post = await this.getPost(id);
         this.posts.delete(post);
     }
-
-    async deletePost (id: number) {
-        // read first for the same reason as updatePost: an unknown id must be a
-        // 404. It also gives us the row to hand back - delete() only reports how
-        // many rows it touched, not what was in them
-        const post = await this.getPost(id);
-
-        await this.posts.delete(id);
-
-        return post;
-    }
 }
